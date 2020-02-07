@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-2020-02-06-21-35-14
+spec:
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-2020-02-06-21-35-14
+  namespace: test-2020-02-06-21-35-14
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: test-2020-02-06-21-35-14
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-2020-02-06-21-35-14
+  namespace: test-2020-02-06-21-35-14
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-2020-02-06-21-35-14
+  template:
+    metadata:
+      labels:
+        app: test-2020-02-06-21-35-14
+    spec:
+      containers:
+      - name: test-2020-02-06-21-35-14
+        image: nginxdemos/hello
+        ports:
+        - containerPort: 80

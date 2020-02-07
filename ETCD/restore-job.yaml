@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: etcd-restore
+  namespace: kube-system
+spec:  
+  selector:
+      matchLabels:
+        app: etcd-restore
+  template:
+    metadata:
+      labels:
+        app: etcd-restore
+    spec:
+      containers:
+      - name: etcd-restore
+        image: raushan2016/etcdv1:latest
+        securityContext:
+         privileged: true
+        env:
+          - name: ETCD_DATADIR
+            value: "/hostvar/lib/etcddisk"
+          - name: SNAPSHOT_PATH
+            value: "/myawesomefileshare/etcd-snapshot-golden.db"
+          - name: CERT_PATH
+            value: "/etc/kubernetes/certs"
+          - name: ETCDCTL_API
+            value: "3"
+        volumeMounts:
+        - name: restart  
+          mountPath: /run/systemd
+        - name: host  
+          mountPath: /etc
+        - name: var
+          mountPath: /hostvar
+        - name: azurefileshare
+          mountPath: /myawesomefileshare
+      nodeSelector:
+          kubernetes.io/role: master
+      tolerations:
+          - effect: NoSchedule
+            operator: Exists
+      hostNetwork: true
+      volumes:
+      - name: restart  
+        hostPath:
+          path: /run/systemd
+          type: DirectoryOrCreate
+      - name: host
+        hostPath:
+          path: /etc
+          type: DirectoryOrCreate
+      - name: var
+        hostPath:
+          path: /var
+          type: DirectoryOrCreate
+      - name: azurefileshare
+        persistentVolumeClaim:
+          claimName: raushank-azure-file1-pvc

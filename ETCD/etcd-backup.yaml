@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: raushank-azure-file1-pvc
+  namespace: kube-system
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: etcd-debugger
+  namespace: kube-system
+spec:  
+  selector:
+      matchLabels:
+        app: etcd-debugger
+  template:
+    metadata:
+      labels:
+        app: etcd-debugger
+    spec:
+      containers:
+      - name: etcd-debugger
+        image: raushan2016/etcdv1:latest
+        securityContext:
+         privileged: true
+        env:
+          - name: ETCD_DATADIR
+            value: "/hostvar/lib/etcddisk"
+          - name: SNAPSHOT_PATH
+            value: "/myawesomefileshare/etcd-snapshot-golden.db"
+          - name: CERT_PATH
+            value: "/etc/kubernetes/certs"
+          - name: ETCDCTL_API
+            value: "3"
+        command: ["/bin/sh","-c", "--"]
+        args: [ "while true; do sleep 30; done;" ]
+        volumeMounts:
+        - name: restart  
+          mountPath: /run/systemd
+        - name: host  
+          mountPath: /etc
+        - name: var
+          mountPath: /hostvar
+        - name: azurefileshare
+          mountPath: /myawesomefileshare
+      nodeSelector:
+          kubernetes.io/role: master
+      tolerations:
+          - effect: NoSchedule
+            operator: Exists
+      hostNetwork: true
+      volumes:
+      - name: restart  
+        hostPath:
+          path: /run/systemd
+          type: DirectoryOrCreate
+      - name: host
+        hostPath:
+          path: /etc
+          type: DirectoryOrCreate
+      - name: var
+        hostPath:
+          path: /var
+          type: DirectoryOrCreate
+      - name: azurefileshare
+        persistentVolumeClaim:
+          claimName: raushank-azure-file1-pvc
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: backup
+  namespace: kube-system
+spec:
+  # activeDeadlineSeconds: 100
+  suspend: true
+  schedule: "* */12 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            # Same image as in /etc/kubernetes/manifests/etcd.yaml
+            image: k8s.gcr.io/etcd-amd64:3.1.12
+            env:
+            - name: ETCDCTL_API
+              value: "3"
+            command: ["/bin/sh"]
+            args: ["-c", "etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/etcdclient.crt --key=/etc/kubernetes/pki/etcd/etcdclient.key snapshot save /backup/etcd-snapshot-$(date +%Y-%m-%d-%H-%M-%S-%Z).db"]
+            volumeMounts:
+            - mountPath: /etc/kubernetes/pki/etcd
+              name: etcd-certs
+              readOnly: true
+            - mountPath: /backup
+              name: backup
+          restartPolicy: OnFailure
+          nodeSelector:
+            kubernetes.io/role: master
+          tolerations:
+          - effect: NoSchedule
+            operator: Exists
+          hostNetwork: true
+          volumes:
+          - name: etcd-certs
+            hostPath:
+              path: /etc/kubernetes/certs/
+              type: DirectoryOrCreate
+          - name: backup
+            persistentVolumeClaim:
+              claimName: raushank-azure-file1-pvc
