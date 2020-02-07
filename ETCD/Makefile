@@ -9,6 +9,6 @@ docker-deploy: docker-build docker-push
 docker-build:
 	docker build . -t ${IMAGE}
 	
-# Push the docker image
+# Push the docker image.
 docker-push:
 	docker push ${IMAGE}
