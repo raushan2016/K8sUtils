@@ -4,9 +4,6 @@ metadata:
   name: etcd-restore
   namespace: kube-system
 spec:  
-  selector:
-      matchLabels:
-        app: etcd-restore
   template:
     metadata:
       labels:
@@ -35,6 +32,7 @@ spec:
           mountPath: /hostvar
         - name: azurefileshare
           mountPath: /myawesomefileshare
+      restartPolicy: Never
       nodeSelector:
           kubernetes.io/role: master
       tolerations:
