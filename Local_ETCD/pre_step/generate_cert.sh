@@ -110,3 +110,39 @@ cfssl gencert \
 
 # verify
 openssl x509 -in ${CPATH}/s3.pem -text -noout
+
+DIR=s4
+CAPATH=./ca_certs
+CPATH=./certs/${DIR}
+mkdir -p ${CPATH}
+
+cat > ${CPATH}/s4-ca-csr.json <<EOF
+{
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "O": "etcd",
+      "OU": "etcd Security",
+      "L": "San Francisco",
+      "ST": "California",
+      "C": "USA"
+    }
+  ],
+  "CN": "s4",
+  "hosts": [
+    "127.0.0.1",
+    "localhost"
+  ]
+}
+EOF
+cfssl gencert \
+  --ca ${CAPATH}/etcd-root-ca.pem \
+  --ca-key ${CAPATH}/etcd-root-ca-key.pem \
+  --config ${CAPATH}/etcd-gencert.json \
+  ${CPATH}/s4-ca-csr.json | cfssljson --bare ${CPATH}/s4
+
+# verify
+openssl x509 -in ${CPATH}/s4.pem -text -noout
