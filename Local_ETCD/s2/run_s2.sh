@@ -9,7 +9,7 @@ etcd --name s2 \
   --advertise-client-urls https://localhost:22379 \
   --listen-peer-urls https://localhost:22380 \
   --initial-advertise-peer-urls https://localhost:22380 \
-  --discovery https://discovery.etcd.io/563d6cc963f30e7c83cf85ded1eb3988 \
+  --discovery https://discovery.etcd.io/928a89fcb686f1b33affb840b617956e \
   --initial-cluster-token tkn \
   --initial-cluster-state new \
   --client-cert-auth \

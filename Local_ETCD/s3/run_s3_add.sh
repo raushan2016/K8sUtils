@@ -3,15 +3,19 @@
 # rm -rf /tmp/etcd/s3
 export ETCDCTL_API=3
 
-etcd --name s3 \
-  --data-dir ./s3/tmp/etcd \
+export ETCD_NAME="s3"
+export ETCD_INITIAL_CLUSTER="s1=https://localhost:2380,s3=https://localhost:32380,s2=https://localhost:22380"
+export ETCD_INITIAL_ADVERTISE_PEER_URLS="https://localhost:32380"
+export ETCD_INITIAL_CLUSTER_STATE="existing"
+
+echo ${ETCD_NAME}
+
+etcd --data-dir ./s3/tmp/etcd \
   --listen-client-urls https://localhost:32379 \
   --advertise-client-urls https://localhost:32379 \
   --listen-peer-urls https://localhost:32380 \
   --initial-advertise-peer-urls https://localhost:32380 \
-  --discovery https://discovery.etcd.io/928a89fcb686f1b33affb840b617956e \
   --initial-cluster-token tkn \
-  --initial-cluster-state new \
   --client-cert-auth \
   --trusted-ca-file ./ca_certs/etcd-root-ca.pem \
   --cert-file ./certs/s3/s3.pem \
@@ -19,7 +23,7 @@ etcd --name s3 \
   --peer-client-cert-auth \
   --peer-trusted-ca-file ./ca_certs/etcd-root-ca.pem \
   --peer-cert-file ./certs/s3/s3.pem \
-  --peer-key-file ./certs/s3/s3-key.pem
+  --peer-key-file ./certs/s3/s3-key.pem \
 #  --initial-cluster s1=https://localhost:2380,s2=https://localhost:22380,s3=https://localhost:32380 \
 
 
