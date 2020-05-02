@@ -1,13 +1,16 @@
-apiVersion: apps/v1beta2
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: model-mount-deployment
 spec:
   selector:
     matchLabels:
-      app: model-service
+      app: model-mount
   replicas: 1
   template:
+    metadata:
+      labels:
+        app: model-mount
     spec:
       volumes:
       - name: model-volume
@@ -15,8 +18,10 @@ spec:
       initContainers:
       - name: model-init
         image: raushan2016/modelmount:latest
+        securityContext:
+          privileged: true
         imagePullPolicy: Always
-        command: ["/model_download",  "raushankdelete8410197315", "test", ".oml_package.zip"]
+        command: ["/model_download.sh",  "raushankdelete8410197315", "test", ".oml_package.zip"]
         volumeMounts:
         - name: model-volume
           mountPath: "/models"
@@ -24,7 +29,7 @@ spec:
       - name: model-service
         image: raushan2016/modelmount:latest
         imagePullPolicy: Always
-        command: ["/model_service"]
+        command: ["/model_service.sh"]
         volumeMounts:
         - name: model-volume
           mountPath: /models

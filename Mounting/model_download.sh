@@ -2,9 +2,10 @@
 set -e
 echo "Logging using system assigned idenitity"
 az login --identity
+az logout
+az login --identity
 
-az account show
-
+echo "Writing token file to /models/token.txt"
 az account get-access-token > /models/token.txt
 
 export ACCOUNT_NAME=$1
