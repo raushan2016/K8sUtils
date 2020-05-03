@@ -18,8 +18,6 @@ spec:
       initContainers:
       - name: model-init
         image: raushan2016/modelmount:latest
-        securityContext:
-          privileged: true
         imagePullPolicy: Always
         command: ["/model_download.sh",  "raushankdelete8410197315", "test", ".oml_package.zip"]
         volumeMounts:

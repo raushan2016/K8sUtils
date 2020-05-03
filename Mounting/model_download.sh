@@ -16,6 +16,6 @@ start=$SECONDS
 
 az storage blob download -c ${CONTAINER_NAME} -n ${BLOB_NAME} -f ./models/${FILE_NAME} --account-name ${ACCOUNT_NAME} --auth-mode login
 duration=$(( SECONDS - start ))
-echo `time taken for model download ${AZ_CLIENT_ID}`
+echo "Time taken for model download ${duration} seconds"
 
 #https://raushankdelete8410197315.blob.core.windows.net/test/.oml_package.zip

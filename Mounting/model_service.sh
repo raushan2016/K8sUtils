@@ -9,5 +9,5 @@ do
     date
     echo "Hostname : $(hostname)"
     ls /models
-    sleep 5
+    sleep 50
 done
