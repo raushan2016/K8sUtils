@@ -11,11 +11,17 @@ az account get-access-token > /models/token.txt
 export ACCOUNT_NAME=$1
 export CONTAINER_NAME=$2
 export BLOB_NAME=$3
-export FILE_NAME=`date +%Y%m%d`-${BLOB_NAME}
-start=$SECONDS
+export FILE_NAME=${BLOB_NAME}
 
-az storage blob download -c ${CONTAINER_NAME} -n ${BLOB_NAME} -f ./models/${FILE_NAME} --account-name ${ACCOUNT_NAME} --auth-mode login
-duration=$(( SECONDS - start ))
-echo "Time taken for model download ${duration} seconds"
+if [ -f "./models/${FILE_NAME}" ]; then
+    echo "$FILE_NAME exist"
+else 
+    echo "$FILE_NAME does not exist"
+    start=$SECONDS
+    az storage blob download -c ${CONTAINER_NAME} -n ${BLOB_NAME} -f ./models/${FILE_NAME} --account-name ${ACCOUNT_NAME} --auth-mode login
+    duration=$(( SECONDS - start ))
+    echo "Time taken for model download ${duration} seconds"
+fi
+
 
 #https://raushankdelete8410197315.blob.core.windows.net/test/.oml_package.zip

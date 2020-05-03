@@ -15,13 +15,17 @@ spec:
       volumes:
       - name: model-volume
         emptyDir: {}
+      - name: host-model-data
+        hostPath:
+          path: /mnt/modelData/
+          type: DirectoryOrCreate
       initContainers:
       - name: model-init
         image: raushan2016/modelmount:latest
         imagePullPolicy: Always
         command: ["/model_download.sh",  "raushankdelete8410197315", "test", ".oml_package.zip"]
         volumeMounts:
-        - name: model-volume
+        - name: host-model-data
           mountPath: "/models"
       containers:
       - name: model-service
@@ -29,5 +33,5 @@ spec:
         imagePullPolicy: Always
         command: ["/model_service.sh"]
         volumeMounts:
-        - name: model-volume
+        - name: host-model-data
           mountPath: /models
