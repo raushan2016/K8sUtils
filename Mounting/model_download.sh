@@ -13,6 +13,8 @@ export CONTAINER_NAME=$2
 export BLOB_NAME=$3
 export FILE_NAME=${BLOB_NAME}
 
+ls -la ./models
+
 if [ -f "./models/${FILE_NAME}" ]; then
     echo "$FILE_NAME exist"
 else 
