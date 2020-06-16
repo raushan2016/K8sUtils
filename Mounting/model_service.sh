@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 set -e
 echo "Starting model service"
+sleep 300000000
+
 
 cat ./models/token.txt
+
+echo "--------------------"
+cat ./models/datetime.txt
+echo "--------------------"
 export FILE_NAME=$1
 
 while [ : ]
@@ -16,7 +22,9 @@ else
     echo "$FILE_NAME does not exist"
         echo "$FILE_NAME does not exist"
         echo "$FILE_NAME does not exist" > /dev/termination-log
-    exit 404
+   #exit 404
 fi
-    sleep 50
+    sleep 30
+    cat ./models/datetime.txt > /dev/termination-log
+    #exit 202
 done

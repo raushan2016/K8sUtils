@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 set -e
 echo "Logging using system assigned idenitity"
-az login --identity
+az login --identity --allow-no-subscriptions
 az logout
-az login --identity
+az login --identity --allow-no-subscriptions
 
 echo "Writing token file to /models/token.txt"
 az account get-access-token > /models/token.txt
+
+date '+%F %T.%3N' >> /models/datetime.txt
 
 export ACCOUNT_NAME=$1
 export CONTAINER_NAME=$2

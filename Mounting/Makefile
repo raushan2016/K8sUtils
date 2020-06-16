@@ -1,6 +1,6 @@
 
 # Image URL to use all building/pushing image targets
-IMAGE ?= raushan2016/modelmount:latest
+IMAGE ?= raushan2016/modelmount:hang
 
 # Build and Push the docker image
 docker-deploy: docker-build docker-push

@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: model-mount
-  replicas: 20
+  replicas: 1
   template:
     metadata:
       labels:
@@ -21,17 +21,17 @@ spec:
           type: DirectoryOrCreate
       initContainers:
       - name: model-init
-        image: raushan2016/modelmount:latest
+        image: raushan2016/modelmount:hang
         imagePullPolicy: Always
         command: ["/model_download.sh",  "raushankdelete8410197315", "test", "modeldata.zip"]
         volumeMounts:
-        - name: host-model-data
+        - name: model-volume
           mountPath: "/models"
       containers:
       - name: model-service
-        image: raushan2016/modelmount:latest
+        image: raushan2016/modelmount:hang
         imagePullPolicy: Always
         command: ["/model_service.sh", "modeldata.zip"]
         volumeMounts:
-        - name: host-model-data
+        - name: model-volume
           mountPath: /models
